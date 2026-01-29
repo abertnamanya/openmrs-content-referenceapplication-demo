@@ -12,6 +12,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -20,14 +21,19 @@ jobs:
         with:
           java-version: '8'
           distribution: 'temurin'
-          server-id: github
-          server-username: ${{ github.actor }}
-          server-password: ${{ secrets.DEPLOY_PACKAGES_TOKEN }}
+          server-id: github # Matches the <id> in your pom.xml distributionManagement
+          # setup-java automatically uses GITHUB_ACTOR and GITHUB_TOKEN by default
+          # if you define server-id, but we can be explicit:
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
 
       - name: Build and Deploy
+        # Added working-directory to target your specific OpenMRS content folder
+        working-directory: ./openmrs-content-referenceapplication-demo
         run: mvn -B clean deploy -DskipTests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify Deployment
         run: |
-          echo "Package should be at:"
-          echo "https://github.com/abertnamanya/packages?repo_name=openmrs-content-referenceapplication-demo"
+          echo "Package deployed for: abertnamanya"
