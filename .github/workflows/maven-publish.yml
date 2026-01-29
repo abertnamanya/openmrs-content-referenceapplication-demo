@@ -22,7 +22,7 @@ jobs:
           distribution: 'temurin'
           server-id: github
           server-username: ${{ github.actor }}
-          server-password: ${{ secrets.GITHUB_TOKEN }}
+          server-password: ${{ secrets.DEPLOY_PACKAGES_TOKEN }}
 
       - name: Build and Deploy
         run: mvn -B clean deploy
