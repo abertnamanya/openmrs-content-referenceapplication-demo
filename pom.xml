@@ -1,27 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openmrs.content</groupId>
 	<artifactId>referenceapplication-demo</artifactId>
 	<version>1.7.0-SNAPSHOT</version>
-	<name />
+	<name>Reference Application Demo Content</name>
 	<packaging>pom</packaging>
+
 	<developers>
 		<developer>
-			<name>OpenMRS</name>
-			<organization>OpenMRS</organization>
-			<organizationUrl>http://openmrs.org</organizationUrl>
+			<name>Abert Namanya</name>
+			<email>abertnamanya@gmail.com</email>
+			<organization>Thrust-Devs</organization>
 		</developer>
 	</developers>
+
 	<scm>
-		<connection>scm:git:git@github.com:openmrs/openmrs-content-referenceapplication-demo.git</connection>
-		<developerConnection>scm:git:git@github.com:openmrs/openmrs-content-referenceapplication-demo.git</developerConnection>
-		<url>https://github.com/openmrs/openmrs-content-referenceapplication-demo.git</url>
-	  <tag>HEAD</tag>
-  </scm>
+		<connection>scm:git:https://github.com/abertnamanya/openmrs-content-referenceapplication-demo.git</connection>
+		<developerConnection>scm:git:https://github.com/abertnamanya/openmrs-content-referenceapplication-demo.git</developerConnection>
+		<url>https://github.com/abertnamanya/openmrs-content-referenceapplication-demo.git</url>
+		<tag>HEAD</tag>
+	</scm>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<configuration.dir>${project.basedir}/configuration</configuration.dir>
+		<github.packages.url>https://maven.pkg.github.com/abertnamanya/openmrs-content-referenceapplication-demo</github.packages.url>
 	</properties>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -53,6 +59,7 @@
 					-->
 				</executions>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -76,6 +83,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
@@ -87,8 +95,14 @@
 					<preparationGoals>clean install</preparationGoals>
 					<goals>deploy</goals>
 					<tagNameFormat>@{project.version}</tagNameFormat>
+					<!-- Added for GitHub integration -->
+					<pushChanges>true</pushChanges>
+					<remoteTagging>true</remoteTagging>
+					<scmCommentPrefix>[maven-release-plugin]</scmCommentPrefix>
+					<arguments>-DskipTests</arguments>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
@@ -115,8 +129,19 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<!-- Added deploy plugin for better control -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>3.1.3</version>
+				<configuration>
+					<skip>false</skip>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
+
 	<repositories>
 		<repository>
 			<id>openmrs-repo</id>
@@ -139,7 +164,20 @@
 			<name>Maven Repository Switchboard</name>
 			<url>https://repo1.maven.org/maven2</url>
 		</repository>
+		<!-- Added GitHub Packages repository -->
+		<repository>
+			<id>github</id>
+			<name>GitHub Packages</name>
+			<url>https://maven.pkg.github.com/abertnamanya/*</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
+
 	<pluginRepositories>
 		<pluginRepository>
 			<id>openmrs-releases</id>
@@ -160,8 +198,29 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</pluginRepository>
+		<!-- Added GitHub plugin repository -->
+		<pluginRepository>
+			<id>github</id>
+			<name>GitHub Packages</name>
+			<url>https://maven.pkg.github.com/abertnamanya/*</url>
+		</pluginRepository>
 	</pluginRepositories>
+
 	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>GitHub Packages</name>
+			<url>${github.packages.url}</url>
+		</repository>
+		<!-- GitHub uses same URL for snapshots -->
+		<snapshotRepository>
+			<id>github</id>
+			<name>GitHub Snapshots</name>
+			<url>${github.packages.url}</url>
+		</snapshotRepository>
+
+		<!-- Optional: Keep OpenMRS configuration commented out for reference -->
+		<!--
 		<repository>
 			<id>openmrs-repo-modules</id>
 			<name>OpenMRS Nexus Modules</name>
@@ -172,5 +231,62 @@
 			<name>OpenMRS Nexus Snapshots</name>
 			<url>https://mavenrepo.openmrs.org/nexus/content/repositories/snapshots</url>
 		</snapshotRepository>
+		-->
 	</distributionManagement>
+
+	<!-- Optional: Profiles for different deployment targets -->
+	<profiles>
+		<profile>
+			<id>github-deploy</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<distributionManagement>
+				<repository>
+					<id>github</id>
+					<name>GitHub Packages</name>
+					<url>${github.packages.url}</url>
+				</repository>
+				<snapshotRepository>
+					<id>github</id>
+					<name>GitHub Snapshots</name>
+					<url>${github.packages.url}</url>
+				</snapshotRepository>
+			</distributionManagement>
+		</profile>
+
+		<profile>
+			<id>openmrs-deploy</id>
+			<distributionManagement>
+				<repository>
+					<id>openmrs-repo-modules</id>
+					<name>OpenMRS Nexus Modules</name>
+					<url>https://mavenrepo.openmrs.org/releases</url>
+				</repository>
+				<snapshotRepository>
+					<id>openmrs-repo-snapshots</id>
+					<name>OpenMRS Nexus Snapshots</name>
+					<url>https://mavenrepo.openmrs.org/nexus/content/repositories/snapshots</url>
+				</snapshotRepository>
+			</distributionManagement>
+		</profile>
+
+		<profile>
+			<id>skip-deployment</id>
+			<properties>
+				<maven.deploy.skip>true</maven.deploy.skip>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-deploy-plugin</artifactId>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
